@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="iii">
+	<select id="userInfo" parameterType="entity.UserInfo" resultType="entity.UserInfo">
+		SELECT
+			 USERID 		as userId,
+  			 USER_NAME		as userNM,
+ 			 GENDER			as gender,
+ 			 USER_LEVEL 	as userLevel,
+ 			 USER_PHONENUM  as phoneNum,
+ 			 USER_STATE		as userState
+		FROM
+		 	CM_USER
+		 WHERE 1=1
+		 <if test="userNM != '' and userNM != null">
+		 	AND USER_NAME = #{userNM}
+		 </if>
+		 <if test="pwd != '' and pwd != null">
+			 AND PASSWORD = #{pwd}
+		 </if>
+	</select>
+
+	<!-- 柜员注册 -->
+	<insert id="userRegist" parameterType="entity.UserInfo">
+		INSERT INTO 
+			CM_USER
+			(
+				USERID,
+  			 	USER_NAME,
+ 			 	PASSWORD,
+ 			 	GENDER,
+ 			 	USER_LEVEL,
+ 			 	USER_PHONENUM,
+ 			 	USER_STATE 
+			)
+		VALUES
+			(
+				#{userId,			jdbcType=VARCHAR},
+				#{userNM,			jdbcType=VARCHAR},
+				#{pwd,				jdbcType=VARCHAR},
+				#{gender,			jdbcType=VARCHAR},
+				#{userLevel,		jdbcType=VARCHAR},
+				#{phoneNum,			jdbcType=VARCHAR},
+				#{userState,		jdbcType=VARCHAR}
+			)		
+	</insert>	
+	<!-- 通过客户Id、手机号或卡号查询客户明细 -->
+	<select id="cusInfo" parameterType="java.util.HashMap" resultType="entity.CusInfo">
+		SELECT
+			  CC_CUSTOMERID     		as customerId,    
+			  CC_NAME              		as customerName,
+			  CC_GENDER            		as gender,
+			  CC_CUSBIRTHDAY       		as cusBirthday,
+			  CC_PHONENUM          		as phoneNum,
+			  CC_CARDNO             	as cardNO,
+			  CC_CARDTYPE        		as cardType,
+			  CC_TELLER	                as teller,
+ 			  CC_DEPOSITDT			 	as depositDt,
+ 			  CC_ADDTIMES				as addTimes,
+  			  CC_DISCOUNTTIMES			as discountTimes,
+  			  CC_DEPOSITAMT				as depositAmt,
+ 			  CC_STARTDT				as startDt,
+ 			  CC_ENDDT  				as endDt,
+ 			  CC_DISCOUNTTIIME		 	as discountTime,
+			  CC_REMARK 			 	as remark,
+			  CC_TOTALCOUNT			  	as totalCount,
+  			  CC_LASTDATE				as totalDate,
+  			  CC_REGISTDT				as cusRegistDt
+		FROM
+		 	CM_CUSINFO
+		 WHERE 1 = 1
+		 	<if test="phoneNum != '' and phoneNum != null" >
+				AND CC_PHONENUM = #{phoneNum}
+			</if>
+			<if test="cardNum != '' and cardNum != null" >
+				AND CC_CARDNO = #{cardNum}
+			</if>
+			<if test="customerId != '' and customerId != null" >
+				AND CC_CUSTOMERID = #{customerId}
+			</if>
+	</select>
+	
+	<!-- 客户注册 -->
+	<insert id="cusRegist" parameterType="entity.CusInfo">
+		INSERT INTO
+			CM_CUSINFO
+			(
+			  CC_CUSTOMERID,     		    
+			  CC_NAME,       		
+			  CC_GENDER,      		
+			  CC_CUSBIRTHDAY,     		
+			  CC_PHONENUM,    		
+			  CC_CARDNO,    	
+			  CC_CARDTYPE,		
+			  CC_TELLER,   
+ 			  CC_DEPOSITDT,	
+ 			  CC_ADDTIMES,
+  			  CC_DISCOUNTTIMES,
+  			  CC_DEPOSITAMT,
+ 			  CC_STARTDT,
+ 			  CC_ENDDT,
+ 			  CC_DISCOUNTTIIME,
+			  CC_REMARK,
+			  CC_TOTALCOUNT,
+  			  CC_LASTDATE,
+  			  CC_REGISTDT 
+			)
+			VALUES
+			(
+				#{customerId			,jdbcType=VARCHAR},
+				#{customerName			,jdbcType=VARCHAR},
+				#{gender				,jdbcType=VARCHAR},
+				#{cusBirthday			,jdbcType=VARCHAR},
+				#{phoneNum				,jdbcType=VARCHAR},
+				#{cardNO 		 		,jdbcType=VARCHAR},
+				#{cardType				,jdbcType=VARCHAR},
+				#{teller 				,jdbcType=VARCHAR},
+				#{depositDt 			,jdbcType=VARCHAR},
+				#{addTimes 				,jdbcType=VARCHAR},
+				#{discountTimes			,jdbcType=VARCHAR},
+				#{depositAmt 			,jdbcType=NUMERIC},
+				#{startDt				,jdbcType=VARCHAR},
+				#{endDt		 			,jdbcType=VARCHAR},
+				#{discountTime			,jdbcType=VARCHAR},
+				#{remark				,jdbcType=VARCHAR},
+				#{totalCount  			,jdbcType=VARCHAR},
+				#{totalDate				,jdbcType=VARCHAR},
+				#{cusRegistDt			,jdbcType=VARCHAR}
+			)  
+	</insert>
+	<!-- 消费明细 -->
+	<insert id="consumeInfo" parameterType="java.util.Map">
+		INSERT INTO
+			CM_CONSUMDETAIL
+			(
+				CC_CUSTOMERID,  
+				CC_CONSUMDT,  
+				CC_CUSTOMER,  
+				CC_CONSUMTIMES,  
+				CC_TELLER,
+				CC_CARDTYPE,
+				CC_REMARK,
+				CC_RECORDDT
+			)
+		VALUES 
+			(
+				#{customerId, 		jdbcType=VARCHAR},
+				#{date,				jdbcType=VARCHAR},
+				#{customer,			jdbcType=VARCHAR},
+				#{times,			jdbcType=VARCHAR},
+				#{teller,			jdbcType=VARCHAR},
+				#{cardType,			jdbcType=VARCHAR},
+				#{remark,			jdbcType=VARCHAR},
+				#{recordDt,			jdbcType=VARCHAR}
+			)
+			
+	</insert>
+	
+	<!-- 查询消费明细 -->
+	<select id="queryConsumeDetail"  parameterType="java.lang.String" resultType="entity.ConsumeInfo">
+		SELECT 
+			CC_CUSTOMERID    		as	customerId,
+			CC_CARDNO       		as	cardNO,
+			CC_PHONENUM         	as	phoneNum,
+			CC_CONSUMDT          	as	consumDT,
+			CC_CUSTOMER     		as	customer,
+			CC_CONSUMTIMES   		as	consumeTimes,
+			CC_TELLER        		as	teller,
+			CC_CARDTYPE      		as	cardType,
+			CC_REMARK				as	remark
+		FROM
+			CM_CONSUMDETAIL
+		WHERE
+			CC_CUSTOMERID = #{customerId}
+	</select>
+	
+		<!-- 储值明细 -->
+		<insert id="deposit" parameterType="entity.DepositInfo">
+			INSERT INTO CM_DEPOSIT (
+			  	CD_CUSTOMERID, 		
+				CD_DEPOSITDT,
+				CD_DEPOSITAMT,
+				CD_CARDTYPE,
+				CD_ADDTIMES,
+	  			CD_DISCOUNTTIMES,
+				CD_DISCOUNTTIME,
+				CD_TELLER,
+				CD_STARTDT,
+				CD_ENDDT,
+				CD_REMARK,
+				CD_RECORDDT,
+				CC_TOTALCOUNT,
+				CC_LASTDATE
+				)
+			VALUES (
+				#{customerId ,		jdbcType=VARCHAR},
+				#{depositDate ,		jdbcType=VARCHAR},
+				#{amount 	,		jdbcType=NUMERIC},
+				#{cardType 	,		jdbcType=VARCHAR},
+				#{addTimes 	,		jdbcType=VARCHAR},
+				#{discountTimes, 	jdbcType=VARCHAR},
+				#{discountTime ,	jdbcType=VARCHAR},
+				#{teller,			jdbcType=VARCHAR},
+				#{startDt, 			jdbcType=VARCHAR},
+				#{endDt, 			jdbcType=VARCHAR},
+				#{remark, 			jdbcType=VARCHAR},
+				#{recordDt,			jdbcType=VARCHAR},	
+				#{totalCount,		jdbcType=VARCHAR},	
+				#{totalDate,		jdbcType=VARCHAR}
+				)
+		</insert>
+	
+		<!-- 查询储值信息 -->
+		<select id="queryDepositInfo" parameterType="java.lang.String" resultType="entity.DepositInfo">
+			SELECT 
+				CD_CUSTOMERID				as customerId, 		
+				CD_DEPOSITDT				as depositDate,
+				CD_DEPOSITAMT				as amount,
+				CD_CARDTYPE					as cardType,
+				CD_ADDTIMES 				as addTimes,
+  				CD_DISCOUNTTIMES			as discountTimes,
+				CD_DISCOUNTTIME				as discountTime,
+				CD_TELLER					as teller,
+				CD_STARTDT					as startDt,
+				CD_ENDDT					as endDt,
+				CD_REMARK					as remark,
+				CC_TOTALCOUNT				as totalCount
+				
+			FROM
+			 	CM_DEPOSIT
+			 WHERE
+			 	CD_CUSTOMERID = #{customerId}
+		</select>
+		<!-- 查询日期  对年/月卡的用户，确认一天只能消费一次 -->
+		<select id="checkConcumeDt" parameterType="java.util.Map" resultType="int">
+			SELECT 
+				count (*)
+			FROM 
+				CM_CONSUMDETAIL
+			WHERE
+				CC_CUSTOMERID = #{customerId}
+			AND
+				substr(CC_CONSUMDT,0,8) = #{date}
+			AND 
+				CC_CARDTYPE = #{cardType}
+		</select>
+		
+		<!-- 客户交易明细查询 -->  <!-- 日营业情况查询 -->
+		<select id="queryCusExp" parameterType="java.util.Map" resultType="java.util.Map">
+			SELECT 
+				a.CD_DEPOSITDT				as 	depositDate,
+				a.CD_DEPOSITAMT				as 	amount,
+				a.CD_CARDTYPE				as 	depositCardType,
+				a.CD_ADDTIMES 				as 	addTimes,
+  				a.CD_DISCOUNTTIMES			as 	discountTimes,
+				a.CD_DISCOUNTTIME			as 	discountTime,
+				a.CD_TELLER					as 	depositTeller,
+				a.CD_STARTDT				as 	startDt,
+				a.CD_ENDDT					as 	endDt,
+				b.CC_CONSUMDT          		as	consumDT,
+				b.CC_CUSTOMER     			as	customer,
+				b.CC_CONSUMTIMES   			as	consumeTimes,
+				b.CC_TELLER        			as	teller,
+				b.CC_CARDTYPE      			as	cardType
+			FROM 
+			 	CM_DEPOSIT a 
+			LEFT JOIN 
+				CM_CONSUMDETAIL b
+			ON
+				a.CD_CUSTOMERID = b.CC_CUSTOMERID
+			WHERE
+				CD_CUSTOMERID = #{customerId , jdbcType=VARCHAR}
+				<if test="recordDt != '' and recordDt != null">
+				AND a.CD_RECORDDT = #{recordDt}
+				</if>
+				<if test="recordDt != '' and recordDt != null">
+				AND b.CC_RECORDDT = #{recordDt}
+				</if>
+		</select>
+		
+		<!-- 客户单日消费情况查询 -->
+		<select id="queryCusSingleConExp" parameterType="java.util.Map" resultType="entity.ConsumeInfo">
+			SELECT 
+				CC_CUSTOMERID				as  "customerId",
+				CC_CONSUMDT          		as	"consumDT",
+				CC_CUSTOMER     			as	"customer",
+				CC_CONSUMTIMES   			as	"consumeTimes",
+				CC_TELLER        			as	"teller",
+				CC_CARDTYPE      			as	"cardType"
+			FROM 
+				CM_CONSUMDETAIL
+			WHERE
+				substr(CC_RECORDDT,0,8) = #{recordDt}
+		</select>
+		
+		<!-- 客户单日储值情况查询 -->
+		<select id="queryCusSingleDepositExp" parameterType="java.util.Map" resultType="entity.DepositInfo">
+			SELECT
+				CD_CUSTOMERID				as  "customerId",
+				CD_DEPOSITDT				as 	"depositDate",
+				CD_DEPOSITAMT				as 	"amount",
+				CD_CARDTYPE					as 	"cardType",
+				CD_ADDTIMES 				as 	"addTimes",
+  				CD_DISCOUNTTIMES			as 	"discountTimes",
+				CD_DISCOUNTTIME				as 	"discountTime",
+				CD_TELLER					as 	"teller",
+				CD_STARTDT					as 	"startDt",
+				CD_ENDDT					as 	"endDt"
+			FROM 
+			 	CM_DEPOSIT  
+			WHERE
+				substr(CD_RECORDDT,0,8) = #{recordDt}
+		</select>
+		
+		<!-- 散客单日消费情况查询 -->
+		<select id="queryCashCusSingleExp" parameterType="java.util.Map" resultType="entity.CashCustomer">
+			SELECT 
+				 CC_NAME 				as "customerName",
+				 CC_CONSUMEDT			as "consumDt",
+  				 CC_GENDER				as "gender",
+  				 CC_PHONENUM 			as "phoneNum",
+ 				 CC_AMOUNT				as "amount",
+				 CC_REMARK				as "remark",
+				 CC_TELLER				as "teller"
+			FROM 
+			 	CM_CASHCUSTOMER  
+			WHERE
+				CC_CONSUMEDT = #{recordDt}
+		</select>
+		
+		<!-- （全部）客户信息查询 -->
+		<select id="queryAllCustomerInfo" resultType="entity.CusInfo">
+			SELECT
+			  CC_CUSTOMERID     		as customerId,    
+			  CC_NAME              		as customerName,
+			  CC_GENDER            		as gender,
+			  CC_CUSBIRTHDAY       		as cusBirthday,
+			  CC_PHONENUM          		as phoneNum,
+			  CC_CARDNO             	as cardNO,
+			  CC_CARDTYPE        		as cardType,
+			  CC_TELLER	                as teller,
+ 			  CC_DEPOSITDT			 	as depositDt,
+ 			  CC_ADDTIMES				as addTimes,
+  			  CC_DISCOUNTTIMES			as discountTimes,
+  			  CC_DEPOSITAMT				as depositAmt,
+ 			  CC_STARTDT				as startDt,
+ 			  CC_ENDDT  				as endDt,
+ 			  CC_DISCOUNTTIIME		 	as discountTime,
+			  CC_REMARK 			 	as remark,
+			  CC_TOTALCOUNT			  	as totalCount,
+  			  CC_LASTDATE				as totalDate,
+  			  CC_REGISTDT				as cusRegistDt
+			FROM
+		 	  CM_CUSINFO
+		</select>
+		
+		<!--（全部） 柜员信息查询 -->
+		<select id="queryTellerList" resultType="entity.UserInfo">
+			SELECT
+  			 USER_NAME		as userNM,
+ 			 GENDER			as gender,
+ 			 USER_LEVEL 	as userLevel,
+ 			 USER_PHONENUM  as phoneNum,
+ 			 USER_STATE		as userState
+			FROM
+		 	 CM_USER
+		</select>
+		
+		<!-- 客户信息修改 -->
+		<update id="updateCusInfo" parameterType="entity.CusInfo" >
+			UPDATE
+				CM_CUSINFO
+			<set> 
+ 				<if test="phoneNum != '' and phoneNum != null">
+					CC_PHONENUM =  #{phoneNum},
+				</if>
+			    <if test="cardNO != '' and cardNO != null">
+			 		CC_CARDNO =  #{cardNO}
+			    </if>
+			</set>
+			WHERE 
+				CC_CUSTOMERID = #{customerId}
+		</update>
+		
+		<!-- 更新客户储值信息 -->
+		<update id="updateCusDepInfo" parameterType="entity.CusInfo" >
+			UPDATE
+				CM_CUSINFO
+			SET
+			    CC_CARDTYPE			=  #{cardType		,jdbcType=VARCHAR},		
+ 			    CC_DEPOSITDT		=  #{depositDt 		,jdbcType=VARCHAR},	
+ 			    CC_ADDTIMES 		=  #{addTimes 		,jdbcType=VARCHAR},
+  			    CC_DISCOUNTTIMES	=  #{discountTimes	,jdbcType=VARCHAR},
+  			    CC_DEPOSITAMT		=  #{depositAmt 	,jdbcType=NUMERIC},
+ 			    CC_STARTDT			=  #{startDt		,jdbcType=VARCHAR},
+ 			    CC_ENDDT			=  #{endDt		 	,jdbcType=VARCHAR},
+ 			    CC_DISCOUNTTIIME	=  #{discountTime	,jdbcType=VARCHAR},
+			    CC_TOTALCOUNT		=  #{totalCount  	,jdbcType=VARCHAR},
+  			    CC_LASTDATE			=  #{totalDate		,jdbcType=VARCHAR},
+  			    CC_REGISTDT 		=  #{cusRegistDt	,jdbcType=VARCHAR}
+			WHERE 
+				CC_CUSTOMERID = #{customerId}
+		</update>
+		
+		<!-- 柜员信息状态修改 -->
+		<update id="updateUserStt" parameterType="java.util.Map" >
+			UPDATE
+				CM_USER
+			SET
+				USER_STATE = #{state} 
+			WHERE 
+				USER_NAME = #{userName}
+		</update>
+		
+		<!-- 查询总使用次数 -->
+		<select  id="getLastTimes" parameterType="java.lang.String" resultType="java.lang.String">
+			SELECT
+				 SUM(CC_CONSUMTIMES) as "lastTimes"
+			FROM  
+				 CM_CONSUMDETAIL 
+			WHERE 
+				 CC_CUSTOMERID = #{customerId}
+			AND
+            	 CC_CARDTYPE = '1'
+			AND
+				 CC_CONSUMDT <![CDATA[>=]]> (
+				 SELECT 
+				 	  MAX(CD_DEPOSITDT) 
+				 FROM 
+				 	  CM_DEPOSIT 
+				 WHERE
+				 	  CD_CUSTOMERID = #{customerId}
+				 AND 
+					  CD_CARDTYPE = '1'
+				)
+		</select>
+		
+		<!-- 查询次卡客户最后一次储值的总次数 -->
+		<select  id="getTotalTimes" parameterType="java.lang.String" resultType="java.lang.String">
+			SELECT
+				 CC_TOTALCOUNT as "totalTimes"
+			FROM  
+				 CM_DEPOSIT 
+			WHERE 
+                 CD_CUSTOMERID = #{customerId}
+			AND
+            	 CD_CARDTYPE = '1' 
+            AND
+				 CD_DEPOSITDT = (
+				 			 SELECT 
+                       			 MAX(CD_DEPOSITDT)
+                 			 FROM
+                       			 CM_DEPOSIT
+                  			WHERE
+                  				 CD_CUSTOMERID = #{customerId}
+							AND
+                       			 CD_CARDTYPE = '1'     			 
+				 			)
+		</select>
+		
+		<!-- 散客消费记录 -->
+		<insert id="insertCashCusConRec" parameterType="entity.CashCustomer">
+			INSERT INTO
+				CM_CASHCUSTOMER
+				(
+					CC_NAME,
+					CC_GENDER,
+					CC_PHONENUM,
+					CC_AMOUNT,
+					CC_CONSUMEDT,
+					CC_REMARK,
+					CC_TELLER
+				)
+			   VALUES 
+				(
+					#{customerName, 		jdbcType=VARCHAR},
+					#{gender,				jdbcType=VARCHAR},
+					#{phoneNum,				jdbcType=VARCHAR},
+					#{amount,				jdbcType=VARCHAR},
+					#{consumDt,				jdbcType=VARCHAR},
+					#{remark,				jdbcType=VARCHAR},
+					#{teller,				jdbcType=VARCHAR}
+				)
+		</insert>
+</mapper>
